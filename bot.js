@@ -49,21 +49,32 @@ bot.onText(/\/start/, async (msg) => {
 });
 
 // 6. عندما يختار المستخدم الساعة من القائمة
+// 6. عندما يختار المستخدم الساعة من القائمة
 bot.on('callback_query', async (query) => {
   const chatId = query.message.chat.id;
   const data = query.data;
 
   if (data.startsWith('set_time_')) {
     const selectedTime = data.replace('set_time_', '');
+
+    // ✅ تحقق من الوقت قبل الحفظ
+    const timeRegex = /^([01]\d|2[0-3]):([0-5]\d)$/;
+    if (!timeRegex.test(selectedTime)) {
+      await bot.answerCallbackQuery({ callback_query_id: query.id, text: '❌ وقت غير صالح' });
+      return;
+    }
+
     await User.findOneAndUpdate(
       { id: chatId },
       { time: selectedTime },
       { upsert: true, new: true }
     );
-    bot.answerCallbackQuery({ callback_query_id: query.id });
-    bot.sendMessage(chatId, `✅ تم تعيين الوقت: ${selectedTime}. ستصلك صفحتك من القرآن يوميًا.`);
+
+    await bot.answerCallbackQuery({ callback_query_id: query.id });
+    await bot.sendMessage(chatId, `✅ تم تعيين الوقت: ${selectedTime}. ستصلك صفحتك من القرآن يوميًا.`);
   }
 });
+
 
 // 7. إرسال رابط الصفحة اليومي
 async function sendPage(user) {
