@@ -3,10 +3,7 @@ const TelegramBot = require('node-telegram-bot-api');
 const mongoose = require('mongoose');
 const cron = require('node-cron');
 const crypto = require('crypto');
-<<<<<<< HEAD
 
-=======
->>>>>>> dc07c93b8287a37d72a1c8b7ab58d1d121a929ae
 // 1. إعداد البوت
 const bot = new TelegramBot(process.env.BOT_TOKEN, { polling: true });
 
